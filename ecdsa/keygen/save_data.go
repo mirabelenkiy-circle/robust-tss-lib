@@ -11,9 +11,16 @@ import (
 	"errors"
 	"math/big"
 
+<<<<<<< HEAD
 	"github.com/bnb-chain/tss-lib/v2/crypto"
 	"github.com/bnb-chain/tss-lib/v2/crypto/paillier"
 	"github.com/bnb-chain/tss-lib/v2/tss"
+=======
+	"github.com/bnb-chain/tss-lib/crypto"
+	"github.com/bnb-chain/tss-lib/crypto/paillier"
+	"github.com/bnb-chain/tss-lib/crypto/zkproofs"
+	"github.com/bnb-chain/tss-lib/tss"
+>>>>>>> d8333a5 (Accountable CGG21 and GG18 (#6))
 )
 
 type (
@@ -74,6 +81,30 @@ func (preParams LocalPreParams) ValidateWithProof() bool {
 		preParams.Beta != nil &&
 		preParams.P != nil &&
 		preParams.Q != nil
+}
+
+func (local LocalPartySaveData) GetRingPedersen(partyIdIndex int) *zkproofs.RingPedersenParams {
+	return &zkproofs.RingPedersenParams{
+		N: local.NTildej[partyIdIndex],
+		S: local.H1j[partyIdIndex],
+		T: local.H2j[partyIdIndex],
+	}
+}
+
+func (local LocalPartySaveData) GetAllRingPedersen() []*zkproofs.RingPedersenParams {
+	rps := make([]*zkproofs.RingPedersenParams, len(local.NTildej))
+	for j, _ := range local.NTildej {
+		rps[j] = local.GetRingPedersen(j)
+	}
+	return rps
+}
+
+func (local *LocalPartySaveData) RingPedersen() *zkproofs.RingPedersenParams {
+	return &zkproofs.RingPedersenParams{
+		N: local.NTildei,
+		S: local.H1i,
+		T: local.H2i,
+	}
 }
 
 // BuildLocalSaveDataSubset re-creates the LocalPartySaveData to contain data for only the list of signing parties.
